@@ -1,4 +1,4 @@
-package service
+package services
 
 import (
     "my-saas-app/internal/domain/entities"
