@@ -1,4 +1,4 @@
-package repositories
+package persistencies
 
 import (
     "my-saas-app/internal/domain/entities"
