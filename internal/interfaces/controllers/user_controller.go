@@ -1,13 +1,19 @@
 package controller
 
 import (
-    "my-saas-app/internal/application/services"
-    "my-saas-app/internal/domain/entities"
-    "net/http"
-    "strconv"
-
-    "github.com/gin-gonic/gin"
+	"encoding/json"
+	"my-saas-app/internal/application/services"
+	"my-saas-app/internal/domain/entities"
+	"my-saas-app/internal/infrastructure/logging"
+	"net/http"
+	"strconv"
 )
+
+type Context interface {
+    Param(string) string
+    Bind(interface{}) error
+    JSON(int, interface{})
+}
 
 type UserController struct {
     userService *services.UserService
@@ -17,70 +23,90 @@ func NewUserController(userService *services.UserService) *UserController {
     return &UserController{userService: userService}
 }
 
-func (c *UserController) GetUserByID(ctx *gin.Context) {
-    id, err := strconv.Atoi(ctx.Param("id"))
+func (uc *UserController) GetUserByID(w http.ResponseWriter, r *http.Request) {
+    fileLogger, err := logging.NewFileLogger("../../infrastructure/logging/logs/controllers_error.log")
     if err != nil {
-        ctx.JSON(http.StatusBadRequest, gin.H{"error": "Invalid user ID"})
+        panic(err)
+    }
+    defer fileLogger.Close()
+
+    id, err := strconv.Atoi(r.URL.Query().Get("id"))
+    if err != nil {
+        go fileLogger.Log(err.Error())
+        w.WriteHeader(http.StatusBadRequest)
+        json.NewEncoder(w).Encode(map[string]string{"error": "Invalid user ID"})
         return
     }
 
-    user, err := c.userService.GetUserByID(id)
+    user, err := uc.userService.GetUserByID(id)
     if err != nil {
-        ctx.JSON(http.StatusNotFound, gin.H{"error": "User not found"})
+        go fileLogger.Log(err.Error())
+        w.WriteHeader(http.StatusNotFound)
+        err := json.NewEncoder(w).Encode(map[string]string{"error": "User not found"})
+        if err != nil {
+            go fileLogger.Log(err.Error())
+        }
         return
     }
 
-    ctx.JSON(http.StatusOK, user)
+    json.NewEncoder(w).Encode(user)
 }
 
-func (c *UserController) CreateUser(ctx *gin.Context) {
+func (uc *UserController) CreateUser(w http.ResponseWriter, r *http.Request) {
     var user entities.User
-    if err := ctx.ShouldBindJSON(&user); err != nil {
-        ctx.JSON(http.StatusBadRequest, gin.H{"error": "Invalid request payload"})
+    if err := json.NewDecoder(r.Body).Decode(&user); err != nil {
+        w.WriteHeader(http.StatusBadRequest)
+        json.NewEncoder(w).Encode(map[string]string{"error": "Invalid request payload"})
         return
     }
 
-    if err := c.userService.CreateUser(&user); err != nil {
-        ctx.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to create user"})
+    if err := uc.userService.CreateUser(&user); err != nil {
+        w.WriteHeader(http.StatusInternalServerError)
+        json.NewEncoder(w).Encode(map[string]string{"error": "Failed to create user"})
         return
     }
 
-    ctx.JSON(http.StatusCreated, user)
+    w.WriteHeader(http.StatusCreated)
+    json.NewEncoder(w).Encode(user)
 }
 
-func (c *UserController) UpdateUser(ctx *gin.Context) {
-    id, err := strconv.Atoi(ctx.Param("id"))
-    if err != nil {
-        ctx.JSON(http.StatusBadRequest, gin.H{"error": "Invalid user ID"})
-        return
-    }
-
+func (uc *UserController) UpdateUser(w http.ResponseWriter, r *http.Request) {
     var user entities.User
-    if err := ctx.ShouldBindJSON(&user); err != nil {
-        ctx.JSON(http.StatusBadRequest, gin.H{"error": "Invalid request payload"})
+    if err := json.NewDecoder(r.Body).Decode(&user); err != nil {
+        w.WriteHeader(http.StatusBadRequest)
+        json.NewEncoder(w).Encode(map[string]string{"error": "Invalid request payload"})
         return
     }
 
-    user.ID = id
-    if err := c.userService.UpdateUser(&user); err != nil {
-        ctx.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to update user"})
+    if err := uc.userService.UpdateUser(&user); err != nil {
+        w.WriteHeader(http.StatusInternalServerError)
+        json.NewEncoder(w).Encode(map[string]string{"error": "Failed to create user"})
         return
     }
 
-    ctx.JSON(http.StatusOK, user)
+    w.WriteHeader(http.StatusCreated)
+    json.NewEncoder(w).Encode(user)
 }
 
-func (c *UserController) DeleteUser(ctx *gin.Context) {
-    id, err := strconv.Atoi(ctx.Param("id"))
+func (uc *UserController) DeleteUser(w http.ResponseWriter, r *http.Request) {
+    fileLogger, err := logging.NewFileLogger("../../infrastructure/logging/logs/controllers_error.log")
     if err != nil {
-        ctx.JSON(http.StatusBadRequest, gin.H{"error": "Invalid user ID"})
+        panic(err)
+    }
+    defer fileLogger.Close()
+    
+    id, err := strconv.Atoi(r.URL.Query().Get("id"))
+    if err != nil {
+        go fileLogger.Log(err.Error())
+        w.WriteHeader(http.StatusBadRequest)
+        json.NewEncoder(w).Encode(map[string]string{"error": "Invalid user ID"})
         return
     }
 
-    if err := c.userService.DeleteUser(id); err != nil {
-        ctx.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to delete user"})
+    if err := uc.userService.DeleteUser(id); err != nil {
+        json.NewEncoder(w).Encode(map[string]string{"error": "Failed to delete user"})
         return
     }
 
-    ctx.JSON(http.StatusOK, gin.H{"message": "User deleted successfully"})
+    json.NewEncoder(w).Encode(map[string]string{"message": "User deleted successfully"})
 }
