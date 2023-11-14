@@ -14,10 +14,10 @@ import (
 // pois se eu n dar return ele vai continuar executando o codigo
 
 func CreateUser(w http.ResponseWriter, r *http.Request) {
-	middlewares.EnableCors(w)
 	
 	switch r.Method {
 	case http.MethodPost:
+		middlewares.EnableCors(w)
 		fileLogger, err := logs.NewFileLogger("general.log")
 		if err != nil {
 			w.WriteHeader(http.StatusInternalServerError)
@@ -26,7 +26,7 @@ func CreateUser(w http.ResponseWriter, r *http.Request) {
 		}
 		defer fileLogger.Close()
 
-		gorm, err := database.NewGormConnection("root:0000@tcp(localhost:3306)/my_sas_app?charset=utf8mb4&parseTime=True&loc=Local")
+		gorm, err := database.NewGormConnection("root:0000@tcp(localhost:3306)/my_saas_app?charset=utf8mb4&parseTime=True&loc=Local")
 		if err != nil {
 			fileLogger.Log("Internal server error")
 			w.WriteHeader(http.StatusInternalServerError)
