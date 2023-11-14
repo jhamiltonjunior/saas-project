@@ -2,7 +2,6 @@ package main
 
 import (
 	"encoding/json"
-	middlewares "my-saas-app/internal/infra/middleware"
 	"my-saas-app/internal/infra/routes"
 	"net/http"
 	// "github.com/my-saas-app/internal/interfaces/api"
@@ -24,6 +23,6 @@ func handler(w http.ResponseWriter, r *http.Request) {
 
 func main() {
 	http.HandleFunc("/", handler)
-	http.HandleFunc("/user", middlewares.EnableCors(routes.CreateUser))
-	http.ListenAndServe(":3000", nil)
+	http.HandleFunc("/user", routes.CreateUser)
+	http.ListenAndServe(":3001", nil)
 }
