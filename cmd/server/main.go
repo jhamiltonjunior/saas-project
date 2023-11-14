@@ -24,5 +24,5 @@ func handler(w http.ResponseWriter, r *http.Request) {
 func main() {
 	http.HandleFunc("/", handler)
 	http.HandleFunc("/user", routes.CreateUser)
-	http.ListenAndServe(":3001", nil)
+	http.ListenAndServe(":3000", nil)
 }
