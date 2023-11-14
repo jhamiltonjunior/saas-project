@@ -4,7 +4,7 @@ import (
 	"encoding/json"
 	"my-saas-app/internal/application/usecases"
 	"my-saas-app/internal/domain/entities"
-	"my-saas-app/internal/infra/logging"
+	"my-saas-app/internal/infra/logs"
 	"net/http"
 	"strconv"
 )
@@ -24,7 +24,7 @@ func NewUserController(UserUseCase *usecases.UserUseCase) *UserController {
 }
 
 func (uc *UserController) GetUserByID(w http.ResponseWriter, r *http.Request) {
-    fileLogger, err := logging.NewFileLogger("../../infrastructure/logging/logs/controllers_error.log")
+    fileLogger, err := logs.NewFileLogger("controllers_error.log")
     if err != nil {
         panic(err)
     }

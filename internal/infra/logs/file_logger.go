@@ -1,6 +1,9 @@
-package logging
+package logs
 
-import "os"
+import (
+	"fmt"
+	"os"
+)
 
 type FileLogger struct {
 	file *os.File
@@ -16,10 +19,11 @@ func NewFileLogger(filename string) (*FileLogger, error) {
 }
 
 func (f *FileLogger) Log(message string) error {
+	fmt.Println(message)
 	_, err := f.file.WriteString(message + "\n")
 	return err
 }
 
-func (f *FileLogger) Close() error {
-	return f.file.Close()
+func (f *FileLogger) Close() {
+	defer f.file.Close()
 }
