@@ -10,73 +10,72 @@ import (
 )
 
 type Context interface {
-    Param(string) string
-    Bind(interface{}) error
-    JSON(int, interface{})
+	Param(string) string
+	Bind(interface{}) error
+	JSON(int, interface{})
 }
 
 type UserController struct {
-    UserUseCase *usecases.UserUseCase
+	UserUseCase *usecases.UserUseCase
 }
 
 func NewUserController(UserUseCase *usecases.UserUseCase) *UserController {
-    return &UserController{UserUseCase: UserUseCase}
+	return &UserController{UserUseCase: UserUseCase}
 }
 
 func (uc *UserController) GetUserByID(w http.ResponseWriter, r *http.Request) {
-    fileLogger, err := logs.NewFileLogger("controllers_error.log")
-    if err != nil {
-        panic(err)
-    }
-    defer fileLogger.Close()
+	fileLogger, err := logs.NewFileLogger("controllers_error.log")
+	if err != nil {
+		panic(err)
+	}
+	defer fileLogger.Close()
 
-    id, err := strconv.Atoi(r.URL.Query().Get("id"))
-    if err != nil {
-        go fileLogger.Log(err.Error())
-        w.WriteHeader(http.StatusBadRequest)
-        json.NewEncoder(w).Encode(map[string]string{"error": "Invalid user ID"})
-        return
-    }
+	id, err := strconv.Atoi(r.URL.Query().Get("id"))
+	if err != nil {
+		go fileLogger.Log(err.Error())
+		w.WriteHeader(http.StatusBadRequest)
+		json.NewEncoder(w).Encode(map[string]string{"error": "Invalid user ID"})
+		return
+	}
 
-    user, err := uc.UserUseCase.GetUserByID(id)
-    if err != nil {
-        go fileLogger.Log(err.Error())
-        w.WriteHeader(http.StatusNotFound)
-        err := json.NewEncoder(w).Encode(map[string]string{"error": "User not found"})
-        if err != nil {
-            go fileLogger.Log(err.Error())
-        }
-        return
-    }
+	user, err := uc.UserUseCase.GetUserByID(id)
+	if err != nil {
+		go fileLogger.Log(err.Error())
+		w.WriteHeader(http.StatusNotFound)
+		err := json.NewEncoder(w).Encode(map[string]string{"error": "User not found"})
+		if err != nil {
+			go fileLogger.Log(err.Error())
+		}
+		return
+	}
 
-    json.NewEncoder(w).Encode(user)
+	json.NewEncoder(w).Encode(user)
 }
 
 func (uc *UserController) CreateUser(w http.ResponseWriter, r *http.Request) {
-    var user entities.User
-    if err := json.NewDecoder(r.Body).Decode(&user); err != nil {
-        w.WriteHeader(http.StatusBadRequest)
-        json.NewEncoder(w).Encode(map[string]string{"error": "Invalid request payload"})
-        return
-    }
+	var user entities.User
+	if err := json.NewDecoder(r.Body).Decode(&user); err != nil {
+		w.WriteHeader(http.StatusBadRequest)
+		json.NewEncoder(w).Encode(map[string]string{"error": "Invalid request payload"})
+		return
+	}
 
-    userId, err := uc.UserUseCase.Create(&user);
+	userId, err := uc.UserUseCase.Create(&user)
+	if err != nil {
+		w.WriteHeader(http.StatusBadRequest)
+		json.NewEncoder(w).Encode(map[string]string{"error": err.Error()})
+		return
+	}
 
-    if  err != nil {
-        w.WriteHeader(http.StatusBadRequest)
-        json.NewEncoder(w).Encode(map[string]string{"error": "error "})
-        return
-    }
+	userCreated, err := uc.UserUseCase.GetUserByID(userId)
+	if err != nil {
+		w.WriteHeader(http.StatusInternalServerError)
+		json.NewEncoder(w).Encode(map[string]string{"error": "Failed to get your data"})
+		return
+	}
 
-    userCreated, err := uc.UserUseCase.GetUserByID(userId)
-    if err != nil {
-        w.WriteHeader(http.StatusInternalServerError)
-        json.NewEncoder(w).Encode(map[string]string{"error": "Failed to get your data"})
-        return
-    }
-
-    w.WriteHeader(http.StatusCreated)
-    json.NewEncoder(w).Encode(userCreated)
+	w.WriteHeader(http.StatusCreated)
+	json.NewEncoder(w).Encode(userCreated)
 }
 
 // func (uc *UserController) UpdateUser(w http.ResponseWriter, r *http.Request) {
@@ -103,7 +102,7 @@ func (uc *UserController) CreateUser(w http.ResponseWriter, r *http.Request) {
 //         panic(err)
 //     }
 //     defer fileLogger.Close()
-    
+
 //     id, err := strconv.Atoi(r.URL.Query().Get("id"))
 //     if err != nil {
 //         go fileLogger.Log(err.Error())

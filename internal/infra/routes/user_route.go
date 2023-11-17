@@ -17,7 +17,7 @@ func CreateUser(w http.ResponseWriter, r *http.Request) {
 	
 	switch r.Method {
 	case http.MethodPost:
-		middlewares.EnableCors(w)
+		middlewares.EnableCors(w, r)
 		fileLogger, err := logs.NewFileLogger("general.log")
 		if err != nil {
 			w.WriteHeader(http.StatusInternalServerError)

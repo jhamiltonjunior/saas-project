@@ -25,7 +25,7 @@ func NewUserUseCase(userRepository repositories.UserRepository) *UserUseCase {
 }
 
 func (uc *UserUseCase) Create(input *entities.User) (int, error) {
-	if !uc.nameValidate(input.Name) {
+	if nameInvalid(input.Name) {
 		return 0, errors.New("name is invalid")
 	}
 	
