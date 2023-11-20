@@ -23,6 +23,7 @@ func handler(w http.ResponseWriter, r *http.Request) {
 
 func main() {
 	http.HandleFunc("/", handler)
-	http.HandleFunc("/user", routes.CreateUser)
+	http.HandleFunc("/api/user", routes.CreateUser)
+	http.HandleFunc("/api/company", routes.CreateCompany)
 	http.ListenAndServe(":3000", nil)
 }
