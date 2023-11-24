@@ -20,7 +20,8 @@ func NewFileLogger(filename string) (*FileLogger, error) {
 
 func (f *FileLogger) Log(message string) error {
 	fmt.Println(message)
-	_, err := f.file.WriteString(message + "\n")
+	fmt.Println("file logger")
+	_, err := f.file.WriteString(message)
 	return err
 }
 

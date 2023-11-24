@@ -26,7 +26,11 @@ func NewUserController(UserUseCase *usecases.UserUseCase) *UserController {
 func (uc *UserController) GetUserByID(w http.ResponseWriter, r *http.Request) {
 	fileLogger, err := logs.NewFileLogger("controllers_error.log")
 	if err != nil {
-		panic(err)
+		w.WriteHeader(http.StatusInternalServerError)
+		json.NewEncoder(w).Encode(map[string]string{
+			"status": "error",
+			"message": "Internal Server Error",
+		})
 	}
 	defer fileLogger.Close()
 
@@ -34,7 +38,10 @@ func (uc *UserController) GetUserByID(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		go fileLogger.Log(err.Error())
 		w.WriteHeader(http.StatusBadRequest)
-		json.NewEncoder(w).Encode(map[string]string{"error": "Invalid user ID"})
+		json.NewEncoder(w).Encode(map[string]string{
+			"status": "error",
+			"message": "Invalid user ID",
+		})
 		return
 	}
 
@@ -42,7 +49,10 @@ func (uc *UserController) GetUserByID(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		go fileLogger.Log(err.Error())
 		w.WriteHeader(http.StatusNotFound)
-		err := json.NewEncoder(w).Encode(map[string]string{"error": "User not found"})
+		err := json.NewEncoder(w).Encode(map[string]string{
+			"status": "error",
+			"message": "User not found",
+		})
 		if err != nil {
 			go fileLogger.Log(err.Error())
 		}
@@ -56,26 +66,40 @@ func (uc *UserController) CreateUser(w http.ResponseWriter, r *http.Request) {
 	var user entities.User
 	if err := json.NewDecoder(r.Body).Decode(&user); err != nil {
 		w.WriteHeader(http.StatusBadRequest)
-		json.NewEncoder(w).Encode(map[string]string{"error": "Invalid request payload"})
+		json.NewEncoder(w).Encode(map[string]string{
+			"status": "error",
+			"message": "Invalid request payload",
+		})
 		return
 	}
 
 	userId, err := uc.UserUseCase.Create(&user)
 	if err != nil {
 		w.WriteHeader(http.StatusBadRequest)
-		json.NewEncoder(w).Encode(map[string]string{"error": err.Error()})
+		json.NewEncoder(w).Encode(map[string]string{
+			"status": "error",
+			"message": err.Error(),
+		})
 		return
 	}
 
 	userCreated, err := uc.UserUseCase.GetUserByID(userId)
 	if err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
-		json.NewEncoder(w).Encode(map[string]string{"error": "Failed to get your data"})
+		json.NewEncoder(w).Encode(map[string]string{
+			"status": "error",
+			"message": "Failed to get your data",
+		})
 		return
 	}
 
 	w.WriteHeader(http.StatusCreated)
-	json.NewEncoder(w).Encode(userCreated)
+	json.NewEncoder(w).Encode(map[string]interface{}{
+		"status": "success",
+		"data":   userCreated,
+		"msg":    "User created successfully",
+		"token":  "bla bla bla",
+	})
 }
 
 // func (uc *UserController) UpdateUser(w http.ResponseWriter, r *http.Request) {

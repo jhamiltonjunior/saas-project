@@ -18,8 +18,11 @@ func CreateUser(w http.ResponseWriter, r *http.Request) {
 		fileLogger, err := logs.NewFileLogger("general.log")
 		if err != nil {
 			w.WriteHeader(http.StatusInternalServerError)
-			go fileLogger.Log(fmt.Sprintf("Internal server error: %s", err.Error()))
-			json.NewEncoder(w).Encode(map[string]string{"error": fmt.Sprintf("Internal server error: %s", err.Error())})
+			// go fileLogger.Log(fmt.Sprintf("Internal server error: %s", err.Error()))
+			json.NewEncoder(w).Encode(map[string]string{
+				"status": "error",
+				"message": fmt.Sprintf("Internal server error: %s", err.Error()),
+			})
 			return
 		}
 		defer fileLogger.Close()
@@ -28,13 +31,19 @@ func CreateUser(w http.ResponseWriter, r *http.Request) {
 		if err != nil {
 			go fileLogger.Log(fmt.Sprintf("Internal server error: %s", err.Error()))
 			w.WriteHeader(http.StatusInternalServerError)
-			json.NewEncoder(w).Encode(map[string]string{"error": "Internal server error"})
+			json.NewEncoder(w).Encode(map[string]string{
+				"status": "error",
+				"message": "Internal server error",
+			})
 			return
 		}
 
 		factors.MakeCreateUserUseCase(database.NewGormUserRepository(gorm), w, r)
 	default:
 		w.WriteHeader(http.StatusMethodNotAllowed)
-		json.NewEncoder(w).Encode(map[string]string{"error": "Invalid request method"})
+		json.NewEncoder(w).Encode(map[string]string{
+			"status": "error",
+			"message": "Invalid request method",
+		})
 	}
 }
