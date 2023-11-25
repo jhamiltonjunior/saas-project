@@ -15,6 +15,8 @@ type Context interface {
 	JSON(int, interface{})
 }
 
+type GenerateJWT func(int) (string, error)
+
 type UserController struct {
 	UserUseCase *usecases.UserUseCase
 }
@@ -62,7 +64,7 @@ func (uc *UserController) GetUserByID(w http.ResponseWriter, r *http.Request) {
 	json.NewEncoder(w).Encode(user)
 }
 
-func (uc *UserController) CreateUser(w http.ResponseWriter, r *http.Request) {
+func (uc *UserController) CreateUser(w http.ResponseWriter, r *http.Request, jwt GenerateJWT) {
 	var user entities.User
 	if err := json.NewDecoder(r.Body).Decode(&user); err != nil {
 		w.WriteHeader(http.StatusBadRequest)
@@ -93,12 +95,22 @@ func (uc *UserController) CreateUser(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	token, err := jwt(userId)
+	if err != nil {
+		w.WriteHeader(http.StatusInternalServerError)
+		json.NewEncoder(w).Encode(map[string]string{
+			"status": "error",
+			"message": "Failed to generate token",
+		})
+		return
+	}
+
 	w.WriteHeader(http.StatusCreated)
 	json.NewEncoder(w).Encode(map[string]interface{}{
 		"status": "success",
 		"data":   userCreated,
 		"message":    "user created",
-		"token":  "bla bla bla",
+		"token":  token,
 	})
 }
 
