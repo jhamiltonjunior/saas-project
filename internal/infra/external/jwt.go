@@ -13,7 +13,12 @@ func GenerateJWT(id int) (string, error) {
 	claims := token.Claims.(jwt.MapClaims)
 
 	claims["authorized"] = true
-	claims["user_id"] = id
+	claims["sub"] = id
+
+	claims["name"] = "Krissanawat"
+	claims["roles"] = "Krissanawat"
+	claims["permissions"] = "Krissanawat"
+
 	claims["client"] = "Krissanawat"
 	claims["aud"] = "billing.jwtgo.io"
 	claims["iss"] = "jwtgo.io"
