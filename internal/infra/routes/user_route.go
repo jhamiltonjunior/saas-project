@@ -11,6 +11,7 @@ import (
 )
 
 func CreateUser(w http.ResponseWriter, r *http.Request) {
+	middlewares.EnableCors(w, r)
 
 	switch r.Method {
 	case http.MethodPost:

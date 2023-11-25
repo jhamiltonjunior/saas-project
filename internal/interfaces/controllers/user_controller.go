@@ -88,7 +88,7 @@ func (uc *UserController) CreateUser(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(http.StatusInternalServerError)
 		json.NewEncoder(w).Encode(map[string]string{
 			"status": "error",
-			"message": "Failed to get your data",
+			"message": "Failed to get data",
 		})
 		return
 	}
@@ -97,7 +97,7 @@ func (uc *UserController) CreateUser(w http.ResponseWriter, r *http.Request) {
 	json.NewEncoder(w).Encode(map[string]interface{}{
 		"status": "success",
 		"data":   userCreated,
-		"msg":    "User created successfully",
+		"message":    "user created",
 		"token":  "bla bla bla",
 	})
 }
