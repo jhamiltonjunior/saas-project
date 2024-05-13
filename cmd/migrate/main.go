@@ -23,6 +23,8 @@ func main() {
 	db.AutoMigrate(&entities.Bank{})
 	db.AutoMigrate(&entities.CreditCard{})
 	db.AutoMigrate(&entities.Remuneration{})
+	db.AutoMigrate(&entities.Expense{})
+	db.AutoMigrate(&entities.CreditCardExpense{})
 	// dbConn, err := database.Connect()
 	// if err != nil {
 	// 	log.Fatalf("failed to connect to database: %v", err)
