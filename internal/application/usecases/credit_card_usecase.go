@@ -15,7 +15,7 @@ func NewCreditCardUseCase(creditCardRepository repositories.CreditCardRepository
 	}
 }
 
-func (bk *CreditCardUseCase) Create(input *entities.CreditCard) (int, error) {
+func (bk *CreditCardUseCase) Create(input *entities.CreditCard) (int32, error) {
 	creditCard := &entities.CreditCard{
 		Name:   input.Name,
 		Value:  input.Value,
@@ -34,7 +34,7 @@ func (bk *CreditCardUseCase) Create(input *entities.CreditCard) (int, error) {
 	return creditCardId, nil
 }
 
-func (bk *CreditCardUseCase) GetCreditCardByID(id int) (*entities.CreditCard, error) {
+func (bk *CreditCardUseCase) GetCreditCardByID(id int32) (*entities.CreditCard, error) {
 	return bk.creditCardRepository.FindByID(id)
 }
 

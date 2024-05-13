@@ -14,7 +14,7 @@ func NewGormCreditCardRepository(db *gorm.DB) *GormCreditCardRepositoryImpl {
 	return &GormCreditCardRepositoryImpl{db: db}
 }
 
-func (g *GormCreditCardRepositoryImpl) FindByID(id int) (*entities.CreditCard, error) {
+func (g *GormCreditCardRepositoryImpl) FindByID(id int32) (*entities.CreditCard, error) {
 	var creditCard entities.CreditCard
 	if err := g.db.First(&creditCard, id).Error; err != nil {
 		return nil, err
@@ -30,7 +30,7 @@ func (g *GormCreditCardRepositoryImpl) FindByName(name string) (*entities.Credit
 	return &creditCard, nil
 }
 
-func (g *GormCreditCardRepositoryImpl) Create(creditCard *entities.CreditCard) (int, error) {
+func (g *GormCreditCardRepositoryImpl) Create(creditCard *entities.CreditCard) (int32, error) {
 	creditCardDB := g.db.Create(creditCard)
 	return creditCard.ID, creditCardDB.Error
 }

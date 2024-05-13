@@ -2,6 +2,7 @@ package controller
 
 import (
 	"encoding/json"
+	"fmt"
 	"my-saas-app/internal/application/usecases"
 	"my-saas-app/internal/domain/entities"
 	"my-saas-app/internal/infra/logs"
@@ -41,13 +42,16 @@ func (uc *CreditCardController) GetCreditCardByID(w http.ResponseWriter, r *http
 		go fileLogger.Log(err.Error())
 		w.WriteHeader(http.StatusBadRequest)
 		json.NewEncoder(w).Encode(map[string]string{
-			"status": "error",
+			"status":  "error",
 			"message": "Invalid creditCard ID",
 		})
 		return
 	}
+	fmt.Println(id)
 
-	creditCard, err := uc.CreditCardUseCase.GetCreditCardByID(id)
+	id2 := int32(3)
+
+	creditCard, err := uc.CreditCardUseCase.GetCreditCardByID(id2)
 	if err != nil {
 		go fileLogger.Log(err.Error())
 		w.WriteHeader(http.StatusNotFound)
@@ -95,22 +99,11 @@ func (uc *CreditCardController) CreateCreditCard(w http.ResponseWriter, r *http.
 		return
 	}
 
-	token, err := jwt(creditCardId)
-	if err != nil {
-		w.WriteHeader(http.StatusInternalServerError)
-		json.NewEncoder(w).Encode(map[string]string{
-			"status": "error",
-			"message": "Failed to generate token",
-		})
-		return
-	}
-
 	w.WriteHeader(http.StatusCreated)
 	json.NewEncoder(w).Encode(map[string]interface{}{
 		"status": "success",
 		"data":   creditCardCreated,
 		"message":    "creditCard created",
-		"token":  token,
 	})
 }
 
