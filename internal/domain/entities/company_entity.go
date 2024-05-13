@@ -11,6 +11,7 @@ type Company struct {
 	CreateAt time.Time `json:"create_at" gorm:"autoCreateTime;type:DATETIME;not null"`
 	UpdateAt time.Time `json:"update_at" gorm:"type:datetime; default:null"`
 	DeleteAt time.Time `json:"delete_at" gorm:"type:datetime; default:null"`
-	UserID   int       `json:"user_id" gorm:"foreignKey:UserID;references:ID;type:int(11);not null"`
 	Active   int       `json:"active" gorm:"default:1;type:tinyint(1);not null;"`
+	UserID   int32     `json:"user_id" gorm:"type:int(11);not null;"`
+	User     User
 }

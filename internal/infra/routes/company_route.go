@@ -22,7 +22,7 @@ func CreateCompany(w http.ResponseWriter, r *http.Request) {
 		}
 		defer fileLogger.Close()
 
-		gorm, err := database.NewGormConnection(NewRouteVariable())
+		gorm, err := database.NewGormConnection(NewRouteVariableDB())
 		if err != nil {
 			w.WriteHeader(http.StatusInternalServerError)
 			go fileLogger.Log(fmt.Sprintf("Internal server error: %s", err.Error()))

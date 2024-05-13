@@ -21,8 +21,8 @@ func handler(w http.ResponseWriter, r *http.Request) {
 	if r.URL.Path == "/" {
 		json.NewEncoder(w).Encode("Hello World")
 	} else {
-			w.WriteHeader(http.StatusNotFound)
-			json.NewEncoder(w).Encode("404 not found :/")
+		w.WriteHeader(http.StatusNotFound)
+		json.NewEncoder(w).Encode("404 not found :/")
 	}
 }
 
@@ -31,5 +31,15 @@ func main() {
 	http.HandleFunc("/api/user/register", routes.CreateUser)
 	http.HandleFunc("/api/company", routes.CreateCompany)
 
-	http.ListenAndServe(":3001", nil)
+	http.HandleFunc("/api/bank/create", routes.CreateBank)
+
+	http.HandleFunc("/api/credit-card/create", routes.CreateCreditCard)
+
+	http.HandleFunc("/api/remuneration/create", routes.CreateRemuneration)
+	http.HandleFunc("/api/remuneration/get-all", routes.GetAllRemunerationByMonth)
+	http.HandleFunc("/api/remuneration/get-all-by-year", routes.GetAllRemunerationByYear)
+	err := http.ListenAndServe(":3001", nil)
+	if err != nil {
+		panic(err)
+	}
 }
