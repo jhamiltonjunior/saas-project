@@ -20,7 +20,7 @@ type Expense struct {
 
 type CreditCardExpense struct {
 	ID           int   `json:"id" gorm:"primary_key;type:int(11);not null;auto_increment;unique_index"`
-	CreditCardID int   `json:"credit_card_id" gorm:"type:int(11);not null;"`
+	CreditCardID int32 `json:"credit_card_id" gorm:"type:int(11);not null;"`
 	ExpenseID    int32 `json:"expense_id" gorm:"type:int(11);not null;"`
 	CreditCard   CreditCard
 	Expense      Expense
