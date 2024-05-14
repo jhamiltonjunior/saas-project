@@ -38,6 +38,11 @@ func main() {
 	http.HandleFunc("/api/remuneration/create", routes.CreateRemuneration)
 	http.HandleFunc("/api/remuneration/get-all", routes.GetAllRemunerationByMonth)
 	http.HandleFunc("/api/remuneration/get-all-by-year", routes.GetAllRemunerationByYear)
+
+	http.HandleFunc("/api/expense/create", routes.CreateExpense)
+	http.HandleFunc("/api/expense/get-all", routes.GetAllExpenseByMonth)
+	http.HandleFunc("/api/expense/get-all-by-year", routes.GetAllExpenseByYear)
+
 	err := http.ListenAndServe(":3001", nil)
 	if err != nil {
 		panic(err)
