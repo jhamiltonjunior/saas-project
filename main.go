@@ -19,10 +19,16 @@ func enableCors(w http.ResponseWriter) {
 func handler(w http.ResponseWriter, r *http.Request) {
 	enableCors(w)
 	if r.URL.Path == "/" {
-		json.NewEncoder(w).Encode("Hello World")
+		err := json.NewEncoder(w).Encode("Hello World")
+		if err != nil {
+			return
+		}
 	} else {
 		w.WriteHeader(http.StatusNotFound)
-		json.NewEncoder(w).Encode("404 not found :/")
+		err := json.NewEncoder(w).Encode("404 not found :/")
+		if err != nil {
+			return
+		}
 	}
 }
 
