@@ -17,12 +17,18 @@ func NewExpenseUseCase(expenseRepository repositories.ExpenseRepository) *Expens
 }
 
 func (bk *ExpenseUseCase) Create(input *entities.Expense) (entities.ExpenseID, error) {
-	expense := &entities.Expense{
-		Name:         input.Name,
-		Value:        input.Value,
-		UserID:       input.UserID,
-		RecurrenceID: input.RecurrenceID,
+	expense, err := entities.NewExpense(input)
+
+	if err != nil {
+		return 0, err
 	}
+
+	//{
+	//	Name:         input.Name,
+	//	Value:        input.Value,
+	//	UserID:       input.UserID,
+	//	RecurrenceID: input.RecurrenceID,
+	//}
 
 	expenseId, err := bk.expenseRepository.Create(expense)
 

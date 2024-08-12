@@ -1,6 +1,7 @@
 package entities
 
 import (
+	"github.com/pkg/errors"
 	"time"
 )
 
@@ -27,4 +28,27 @@ type CreditCardExpense struct {
 	ExpenseID    int32 `json:"expense_id" gorm:"type:int(11);not null;"`
 	CreditCard   CreditCard
 	Expense      Expense
+}
+
+func (exp *Expense) NameIsValid() error {
+	if len(exp.Name) < 3 || len(exp.Name) > 100 {
+		return errors.New("Essa descricao nao e valida")
+	}
+
+	return nil
+}
+
+func NewExpense(exp *Expense) (*Expense, error) {
+	expense := &Expense{
+		Name:         exp.Name,
+		Value:        exp.Value,
+		UserID:       exp.UserID,
+		RecurrenceID: exp.RecurrenceID,
+	}
+
+	if err := expense.NameIsValid(); err != nil {
+		return nil, err
+	}
+
+	return expense, nil
 }
