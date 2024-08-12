@@ -5,8 +5,8 @@ import (
 
 	"gorm.io/driver/mysql"
 	"gorm.io/gorm"
-	"my-saas-app/internal/domain/entities"
-	// "my-saas-app/internal/infrastructure/database"
+	"my-saas-app/src/domain/entities"
+	// "my-saas-app/src/infrastructure/database"
 	// "my-saas-app/scripts/db"
 )
 

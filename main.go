@@ -2,11 +2,11 @@ package main
 
 import (
 	"encoding/json"
-	"my-saas-app/internal/infra/routes"
+	"my-saas-app/src/external/routes"
 	"net/http"
-	// "github.com/my-saas-app/internal/interfaces/api"
-	// "github.com/my-saas-app/internal/interfaces/config"
-	// "github.com/my-saas-app/internal/interfaces/routes"
+	// "github.com/my-saas-app/src/adapters/api"
+	// "github.com/my-saas-app/src/adapters/config"
+	// "github.com/my-saas-app/src/adapters/routes"
 	// "github.com/my-saas-app/pkg/server"
 )
 
