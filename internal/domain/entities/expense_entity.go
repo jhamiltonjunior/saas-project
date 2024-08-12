@@ -38,6 +38,14 @@ func (exp *Expense) NameIsValid() error {
 	return nil
 }
 
+func (exp *Expense) ValidadeUser() error {
+	if exp.UserID < 1 {
+		return errors.New("Usuario de cadastro da despesa nao encontrado!")
+	}
+
+	return nil
+}
+
 func NewExpense(exp *Expense) (*Expense, error) {
 	expense := &Expense{
 		Name:         exp.Name,
@@ -47,6 +55,10 @@ func NewExpense(exp *Expense) (*Expense, error) {
 	}
 
 	if err := expense.NameIsValid(); err != nil {
+		return nil, err
+	}
+
+	if err := expense.ValidadeUser(); err != nil {
 		return nil, err
 	}
 
